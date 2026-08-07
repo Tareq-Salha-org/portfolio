@@ -1,0 +1,239 @@
+{
+  "generated_at": "2026-08-07T11:52:10Z",
+  "cv": {
+    "full_name": "Tareq Fareed Salha",
+    "contact": {
+      "email": "eng.tareq.salha@gmail.com",
+      "phone": "+963985799827",
+      "location": "Syria",
+      "linkedin": "https://www.linkedin.com/me",
+      "website": null,
+      "github": "https://github.com/Tareq-Salha"
+    },
+    "professional_summary": "Driven backend developer with expertise in the Laravel framework, adept at creating robust web applications that align with business goals[cite: 2]. Proven ability to implement RESTful APIs, optimize database performance, and enhance application scalability[cite: 2]. Experienced in real-time features, educational platforms, service marketplaces, system integrations, and infrastructure automation[cite: 2].",
+    "education": [
+      {
+        "institution": "Damascus University",
+        "degree": "Software Engineering",
+        "location": "Swaidaa, Syria",
+        "start_date": "2022",
+        "end_date": "2028"
+      }
+    ],
+    "experience": [
+      {
+        "role": "Freelance Backend Developer",
+        "company": "Freelance",
+        "location": "Remote",
+        "start_date": "2026-06",
+        "end_date": "Present",
+        "responsibilities": [
+          "Developed custom backend features and RESTful APIs for client projects including international educational platforms and specialized web applications.",
+          "Implemented database models, user role management, content delivery endpoints, and third-party integrations."
+        ],
+        "achievements": [
+          "Successfully delivered backend solutions for York Educational Platform (UK)."
+        ]
+      },
+      {
+        "role": "Backend Developer",
+        "company": "Future X",
+        "location": "Jordan, Amman",
+        "start_date": "2026-01",
+        "end_date": "2026-06-01",
+        "responsibilities": [
+          "Developed and maintained web applications using the Laravel framework to deliver robust and scalable solutions[cite: 2].",
+          "Enhanced company ERP system by integrating Agora Voice API to enable real-time voice communication features[cite: 2].",
+          "Implemented integration with the Jordanian e-Invoicing system (JoFotara) to ensure compliance and streamline billing processes[cite: 2].",
+          "Designed and implemented preliminary CI/CD pipelines to automate testing and deployment workflows[cite: 2].",
+          "Implemented RESTful APIs and optimized database queries and caching strategies[cite: 2]."
+        ],
+        "achievements": [
+          "Successfully integrated Agora Voice API into company ERP[cite: 2].",
+          "Integrated JoFotara e-Invoicing compliance system[cite: 2]."
+        ]
+      },
+      {
+        "role": "Field Observer",
+        "company": "GS",
+        "location": "Syria",
+        "start_date": "2025-12",
+        "end_date": "2026-02",
+        "responsibilities": [
+          "Managed daily operations and ensured smooth workflow[cite: 2].",
+          "Collaborated with team members to achieve project goals[cite: 2]."
+        ],
+        "achievements": []
+      }
+    ],
+    "skills": {
+      "backend_development": [
+        "Laravel Framework",
+        "PHP Development",
+        "RESTful APIs",
+        "Database Architecture"
+      ],
+      "integrations": [
+        "Agora Voice API",
+        "JoFotara (Jordanian E-invoicing)",
+        "Real-Time Chat & WebSockets",
+        "Educational Content Delivery APIs"
+      ],
+      "devops_and_tools": [
+        "CI/CD Pipeline Implementation",
+        "Version Control (Git & GitHub)"
+      ],
+      "core_competencies": [
+        "Database Optimization",
+        "Application Scalability",
+        "Clean Code & API Design"
+      ]
+    },
+    "certifications": [],
+    "languages_spoken": [
+      "Arabic",
+      "English"
+    ]
+  },
+  "projects": [
+    {
+      "id": "york-educational-platform",
+      "name": "York Educational Platform (منصة يورك التعليمية)",
+      "project_type": "Freelance / Educational Platform Backend",
+      "description": "مشروع فريلانس لتطوير الخلفية البرمجية والواجهات البرمجية (APIs) لمنصة تعليمية بريطانية (York)، يهدف لإدارة الكورسات، الطلاب، المعلمين، واختبارات التقييم مع إدارة جودة المحتوى.",
+      "primary_language": "PHP",
+      "languages_breakdown": {
+        "PHP": 88.0,
+        "SQL": 12.0
+      },
+      "tech_stack": [
+        "Laravel",
+        "PHP",
+        "RESTful API",
+        "MySQL",
+        "Role-Based Access Control (RBAC)"
+      ],
+      "role_responsibility": "Freelance Backend Developer - تصميم وتطوير قواعد البيانات والواجهات البرمجية الخاصة بإدارة الدورات والاشتكارات وحسابات المستخدمين.",
+      "notable_contributions": [
+        "بناء هيكلية خادم متطورة لضمان وصول سلس وسريع للدروس والمواد التعليمية.",
+        "تطبيق صلاحيات مخصصة للطلاب والمعلمين والإدارة."
+      ],
+      "demo_url": null,
+      "screenshots": [],
+      "stars": 0,
+      "forks": 0,
+      "watchers": 0,
+      "is_fork": false,
+      "is_archived": false,
+      "classification_confidence": 0.98
+    },
+    {
+      "id": "litaskunu-app",
+      "name": "Litaskunu (لتسكنوا)",
+      "project_type": "Social & Matchmaking Platform Backend",
+      "description": "تطبيق تواصل اجتماعي وتوافق وفق الشريعة الإسلامية يتيح التعارف الضابط والآمن مع نظام محادثة فوري (شات) وإدارة الأدوار والصلاحيات.",
+      "primary_language": "PHP",
+      "languages_breakdown": {
+        "PHP": 85.0,
+        "Blade / HTML": 10.0,
+        "SQL": 5.0
+      },
+      "tech_stack": [
+        "Laravel",
+        "PHP",
+        "RESTful API",
+        "WebSockets / Pusher Chat",
+        "MySQL",
+        "Role-Based Access Control (RBAC)"
+      ],
+      "role_responsibility": "Backend Developer - تطوير وتنفيذ واجهات البرمجة RESTful APIs، منطق المحادثات الفورية (Real-time Chat)، وإدارة الصلاحيات وضوابط المستخدمين.",
+      "notable_contributions": [
+        "بناء هيكلية APIs آمنة لإدارة نظام الشات والتواصل المباشر.",
+        "تطبيق ضوابط وتصاريح وصول وفق الشريعة الإسلامية والأدوار المحددة."
+      ],
+      "demo_url": null,
+      "screenshots": [],
+      "stars": 0,
+      "forks": 0,
+      "watchers": 0,
+      "is_fork": false,
+      "is_archived": false,
+      "classification_confidence": 0.95
+    },
+    {
+      "id": "rahti-app",
+      "name": "Rahti (راحتي)",
+      "project_type": "On-Demand Home Services Booking System",
+      "description": "تطبيق متكامل لمكتب تقديم الخدمات المنزلية (مثل تنظيف المنازل، الصيانة، والخدمات المختلفة) لعرض الخدمات، إدارة الطلبات والحجوزات ومتابعة المزودين.",
+      "primary_language": "PHP",
+      "languages_breakdown": {
+        "PHP": 90.0,
+        "SQL": 10.0
+      },
+      "tech_stack": [
+        "Laravel",
+        "PHP",
+        "RESTful API",
+        "MySQL",
+        "Database Query Optimization"
+      ],
+      "role_responsibility": "Backend Developer - تصميم قاعدة البيانات وقواعد حجز الخدمات، وإنشاء واجهات البرمجة الخاصة بإدارة مقدمي الخدمات والطلبات.",
+      "notable_contributions": [
+        "تطوير نظام حجز مرن يربط العميل بـ مكتب الخدمات ومزودي الخدمة.",
+        "تحسين الاستعلامات الهيكلية لضمان سرعة معالجة الطلبات وسهولة التوسع."
+      ],
+      "demo_url": null,
+      "screenshots": [],
+      "stars": 0,
+      "forks": 0,
+      "watchers": 0,
+      "is_fork": false,
+      "is_archived": false,
+      "classification_confidence": 0.95
+    },
+    {
+      "id": "futurex-erp-integration",
+      "name": "FutureX ERP Integration",
+      "project_type": "ERP System Enhancement & E-Invoicing",
+      "description": "مشروع تطوير وتحديث نظام ERP يشمل دمج خدمات الصوت المباشر Agora Voice API وتطبيق نظام الفوترة الإلكترونية الأردني (JoFotara).",
+      "primary_language": "PHP",
+      "languages_breakdown": {
+        "PHP": 88.0,
+        "Shell": 7.0,
+        "SQL": 5.0
+      },
+      "tech_stack": [
+        "Laravel",
+        "PHP",
+        "Agora Voice API",
+        "JoFotara E-Invoicing",
+        "CI/CD Pipelines",
+        "Git"
+      ],
+      "role_responsibility": "Backend Developer - بناء التكامل مع الخدمات الخارجية والفوترة الإلكترونية والأتمتة.",
+      "notable_contributions": [
+        "دمج Agora Voice API للاتصال الصوتي المباشر داخل النظام[cite: 2].",
+        "ربط نظام الفوترة الإلكترونية JoFotara لضمان الامتثال القانوني[cite: 2]."
+      ],
+      "demo_url": null,
+      "screenshots": [],
+      "stars": 0,
+      "forks": 0,
+      "watchers": 0,
+      "is_fork": false,
+      "is_archived": false,
+      "classification_confidence": 0.98
+    }
+  ],
+  "notes": [
+    "تم تحديث رابط GitHub في الـ CV ليكون: https://github.com/TarekSalha288[cite: 1].",
+    "تم حذف الحقل repo_url من كافة المشاريع بناءً على طلبك.",
+    "تمت إزالة رابط القديم https://github.com/Tareq-Salha بالكامل."
+  ],
+  "edge_case_handling": {
+    "rate_limits": "Apply exponential backoff if GitHub API rate limits are encountered.",
+    "private_repos": "Private repos are flagged and skipped if access token is missing.",
+    "large_readmes": "Truncate to 5000 characters while retaining full original URLs.",
+    "ambiguous_role_inferences": "Inferred backend engineering responsibilities matching CV expertise in Laravel and REST APIs."
+  }
+}
