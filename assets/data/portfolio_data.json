@@ -98,9 +98,8 @@
   "projects": [
     {
       "id": "york-educational-platform",
-      "name": "York Educational Platform (منصة يورك التعليمية)",
+      "name": "York Educational Platform",
       "project_type": "Freelance / Educational Platform Backend",
-      "description": "مشروع فريلانس لتطوير الخلفية البرمجية والواجهات البرمجية (APIs) لمنصة تعليمية بريطانية (York)، يهدف لإدارة الكورسات، الطلاب، المعلمين، واختبارات التقييم مع إدارة جودة المحتوى.",
       "primary_language": "PHP",
       "languages_breakdown": {
         "PHP": 88.0,
@@ -113,11 +112,6 @@
         "MySQL",
         "Role-Based Access Control (RBAC)"
       ],
-      "role_responsibility": "Freelance Backend Developer - تصميم وتطوير قواعد البيانات والواجهات البرمجية الخاصة بإدارة الدورات والاشتكارات وحسابات المستخدمين.",
-      "notable_contributions": [
-        "بناء هيكلية خادم متطورة لضمان وصول سلس وسريع للدروس والمواد التعليمية.",
-        "تطبيق صلاحيات مخصصة للطلاب والمعلمين والإدارة."
-      ],
       "demo_url": null,
       "screenshots": [],
       "stars": 0,
@@ -129,9 +123,8 @@
     },
     {
       "id": "litaskunu-app",
-      "name": "Litaskunu (لتسكنوا)",
+      "name": "Litaskunu",
       "project_type": "Social & Matchmaking Platform Backend",
-      "description": "تطبيق تواصل اجتماعي وتوافق وفق الشريعة الإسلامية يتيح التعارف الضابط والآمن مع نظام محادثة فوري (شات) وإدارة الأدوار والصلاحيات.",
       "primary_language": "PHP",
       "languages_breakdown": {
         "PHP": 85.0,
@@ -146,11 +139,6 @@
         "MySQL",
         "Role-Based Access Control (RBAC)"
       ],
-      "role_responsibility": "Backend Developer - تطوير وتنفيذ واجهات البرمجة RESTful APIs، منطق المحادثات الفورية (Real-time Chat)، وإدارة الصلاحيات وضوابط المستخدمين.",
-      "notable_contributions": [
-        "بناء هيكلية APIs آمنة لإدارة نظام الشات والتواصل المباشر.",
-        "تطبيق ضوابط وتصاريح وصول وفق الشريعة الإسلامية والأدوار المحددة."
-      ],
       "demo_url": null,
       "screenshots": [],
       "stars": 0,
@@ -162,9 +150,8 @@
     },
     {
       "id": "rahti-app",
-      "name": "Rahti (راحتي)",
+      "name": "Rahti",
       "project_type": "On-Demand Home Services Booking System",
-      "description": "تطبيق متكامل لمكتب تقديم الخدمات المنزلية (مثل تنظيف المنازل، الصيانة، والخدمات المختلفة) لعرض الخدمات، إدارة الطلبات والحجوزات ومتابعة المزودين.",
       "primary_language": "PHP",
       "languages_breakdown": {
         "PHP": 90.0,
@@ -176,11 +163,6 @@
         "RESTful API",
         "MySQL",
         "Database Query Optimization"
-      ],
-      "role_responsibility": "Backend Developer - تصميم قاعدة البيانات وقواعد حجز الخدمات، وإنشاء واجهات البرمجة الخاصة بإدارة مقدمي الخدمات والطلبات.",
-      "notable_contributions": [
-        "تطوير نظام حجز مرن يربط العميل بـ مكتب الخدمات ومزودي الخدمة.",
-        "تحسين الاستعلامات الهيكلية لضمان سرعة معالجة الطلبات وسهولة التوسع."
       ],
       "demo_url": null,
       "screenshots": [],
@@ -195,7 +177,6 @@
       "id": "futurex-erp-integration",
       "name": "FutureX ERP Integration",
       "project_type": "ERP System Enhancement & E-Invoicing",
-      "description": "مشروع تطوير وتحديث نظام ERP يشمل دمج خدمات الصوت المباشر Agora Voice API وتطبيق نظام الفوترة الإلكترونية الأردني (JoFotara).",
       "primary_language": "PHP",
       "languages_breakdown": {
         "PHP": 88.0,
@@ -209,11 +190,6 @@
         "JoFotara E-Invoicing",
         "CI/CD Pipelines",
         "Git"
-      ],
-      "role_responsibility": "Backend Developer - بناء التكامل مع الخدمات الخارجية والفوترة الإلكترونية والأتمتة.",
-      "notable_contributions": [
-        "دمج Agora Voice API للاتصال الصوتي المباشر داخل النظام[cite: 2].",
-        "ربط نظام الفوترة الإلكترونية JoFotara لضمان الامتثال القانوني[cite: 2]."
       ],
       "demo_url": null,
       "screenshots": [],

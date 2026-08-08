@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/theme.dart';
+import '../core/utils/motion.dart';
 import '../core/widgets/grid_background.dart';
 import '../core/widgets/svg_icon.dart';
 
@@ -220,6 +221,8 @@ class ProjectVisual extends StatelessWidget {
                       height: 1.2,
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  const _PulseDot(),
                 ],
               ),
             ),
@@ -256,6 +259,65 @@ class ProjectVisual extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A tiny pulsing "live" dot — signals an active backend endpoint. Uses a
+/// single repeating controller; disabled for reduced-motion users.
+class _PulseDot extends StatefulWidget {
+  const _PulseDot();
+
+  @override
+  State<_PulseDot> createState() => _PulseDotState();
+}
+
+class _PulseDotState extends State<_PulseDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+    if (!Motion.reduceMotion) {
+      _controller.repeat(reverse: true);
+    } else {
+      _controller.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return FadeTransition(
+      opacity: Tween<double>(
+        begin: 0.35,
+        end: 1,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
+      child: Container(
+        width: 6,
+        height: 6,
+        decoration: BoxDecoration(
+          color: palette.accent,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: palette.accent.withValues(alpha: 0.6),
+              blurRadius: 5,
+            ),
+          ],
+        ),
       ),
     );
   }

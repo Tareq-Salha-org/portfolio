@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
 
+import '../core/animations/animations.dart';
 import '../core/localization/app_scope.dart';
 import '../core/theme/theme.dart';
+import '../core/utils/motion.dart';
 import '../core/widgets/widgets.dart';
 import '../models/models.dart';
 import 'project_visual.dart';
 
+/// Opens the project details dialog with a polished scale + fade transition,
+/// feeling connected to the card that was tapped.
 Future<void> showProjectDetails(BuildContext context, Project project) {
-  return showDialog<void>(
+  return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    builder: (_) => _ProjectDetailsDialog(project: project),
+    barrierLabel: 'Project details',
+    barrierColor: Colors.black.withValues(alpha: 0.55),
+    transitionDuration: Motion.duration(MotionTokens.quick),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: MotionCurves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1).animate(curved),
+          child: child,
+        ),
+      );
+    },
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        _ProjectDetailsDialog(project: project),
   );
 }
 
@@ -59,14 +81,14 @@ class _ProjectDetailsDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TechChip(
-                            label: project.localizedType(scope.locale),
+                            label: project.projectType,
                             accent: accent,
                           ),
                           const SizedBox(height: 14),
                           Text(project.name, style: styles.headline),
                           const SizedBox(height: 14),
                           Text(
-                            project.localizedDescription(scope.locale),
+                            project.description,
                             style: styles.bodyLarge.copyWith(
                               color: palette.textSecondary,
                             ),
@@ -127,7 +149,7 @@ class _ProjectDetailsDialog extends StatelessWidget {
             border: Border.all(color: palette.border),
           ),
           child: Text(
-            project.localizedRole(scope.locale),
+            project.role,
             style: styles.bodySmall.copyWith(color: palette.textSecondary),
           ),
         ),
@@ -139,7 +161,7 @@ class _ProjectDetailsDialog extends StatelessWidget {
     final palette = AppPalette.of(context);
     final styles = AppTextStyles.of(context);
     final scope = AppScope.of(context);
-    final items = project.localizedContributions(scope.locale);
+    final items = project.contributions;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

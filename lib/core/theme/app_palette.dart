@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 /// Both [dark] and [light] variants are designed intentionally rather than
 /// inverted. Widgets should always resolve colors through [AppPalette.of]
 /// instead of hardcoding values.
+///
+/// Visual identity: the signature [Laravel brand red](https://laravel.com)
+/// `#FF2D20`. Backgrounds are deep warm red-black (dark) or soft off-white with
+/// a warm cast (light); the primary accent is Laravel red with soft coral
+/// highlights. Technology colours are kept out of the palette on purpose so
+/// the identity stays calm and premium.
 @immutable
 class AppPalette {
   final Color background;
@@ -63,65 +69,65 @@ class AppPalette {
     required this.scrim,
   });
 
-  /// Laravel-inspired red used as the primary accent across the portfolio.
+  /// Laravel's brand red used as the primary accent across the portfolio.
   static const Color _laravelRed = Color(0xFFFF2D20);
 
   static const AppPalette dark = AppPalette(
-    background: Color(0xFF0B1220),
-    backgroundAlt: Color(0xFF0E1626),
-    surface: Color(0xFF111B2E),
-    surfaceElevated: Color(0xFF17233A),
-    border: Color(0xFF1F2B42),
-    borderStrong: Color(0xFF2B3C58),
+    background: Color(0xFF120B0C),
+    backgroundAlt: Color(0xFF191113),
+    surface: Color(0xFF1F1517),
+    surfaceElevated: Color(0xFF2A1D1F),
+    border: Color(0xFF3B292B),
+    borderStrong: Color(0xFF4E3639),
     primary: _laravelRed,
-    primaryStrong: Color(0xFFE0261A),
-    primaryHover: Color(0xFFFF4D3D),
-    primaryPressed: Color(0xFFD92317),
-    primarySoft: Color(0x1AFF2D20),
-    primaryBorder: Color(0x4DFF2D20),
-    primaryText: Color(0xFFFF2D20),
+    primaryStrong: Color(0xFFE52214),
+    primaryHover: Color(0xFFFF5446),
+    primaryPressed: Color(0xFFD9261C),
+    primarySoft: Color(0x24FF2D20),
+    primaryBorder: Color(0x55FF2D20),
+    primaryText: Color(0xFFFF4D40),
     onPrimary: Color(0xFFFFFFFF),
-    accent: Color(0xFF34D399),
-    accentSoft: Color(0x1734D399),
-    textPrimary: Color(0xFFE9EFF6),
-    textSecondary: Color(0xFFA7B6CC),
-    textMuted: Color(0xFF7B8CAD),
-    codeBackground: Color(0xFF0D1526),
-    success: Color(0xFF34D399),
-    warning: Color(0xFFFBBF24),
-    error: Color(0xFFF87171),
+    accent: Color(0xFFFF8A75),
+    accentSoft: Color(0x1AFF8A75),
+    textPrimary: Color(0xFFF5ECEB),
+    textSecondary: Color(0xFFC0B0AF),
+    textMuted: Color(0xFF8F7D7C),
+    codeBackground: Color(0xFF150D0E),
+    success: Color(0xFF4CC38A),
+    warning: Color(0xFFF5C24B),
+    error: Color(0xFFFF6666),
     glow: Color(0x33FF2D20),
     gridLine: Color(0x0FFFFFFF),
     scrim: Color(0xB8000000),
   );
 
   static const AppPalette light = AppPalette(
-    background: Color(0xFFF6F8FB),
-    backgroundAlt: Color(0xFFEEF2F7),
+    background: Color(0xFFFCF7F6),
+    backgroundAlt: Color(0xFFF5ECEA),
     surface: Color(0xFFFFFFFF),
     surfaceElevated: Color(0xFFFFFFFF),
-    border: Color(0xFFE1E8F0),
-    borderStrong: Color(0xFFC9D4E0),
-    primary: _laravelRed,
-    primaryStrong: Color(0xFFE0261A),
-    primaryHover: Color(0xFFFF4D3D),
-    primaryPressed: Color(0xFFD92317),
-    primarySoft: Color(0x14FF2D20),
-    primaryBorder: Color(0x40FF2D20),
-    primaryText: Color(0xFFE0261A),
+    border: Color(0xFFE8DCDA),
+    borderStrong: Color(0xFFD8C4C1),
+    primary: Color(0xFFE3362C),
+    primaryStrong: Color(0xFFC3271F),
+    primaryHover: Color(0xFFF1483D),
+    primaryPressed: Color(0xFFB3221A),
+    primarySoft: Color(0x18E3362C),
+    primaryBorder: Color(0x48E3362C),
+    primaryText: Color(0xFFC3271F),
     onPrimary: Color(0xFFFFFFFF),
-    accent: Color(0xFF059669),
-    accentSoft: Color(0x14059669),
-    textPrimary: Color(0xFF0F172A),
-    textSecondary: Color(0xFF3B4C63),
-    textMuted: Color(0xFF64748B),
-    codeBackground: Color(0xFFF1F5F9),
+    accent: Color(0xFFE65547),
+    accentSoft: Color(0x16E65547),
+    textPrimary: Color(0xFF2A1C1A),
+    textSecondary: Color(0xFF5F4A46),
+    textMuted: Color(0xFF8A7471),
+    codeBackground: Color(0xFFFAF0EE),
     success: Color(0xFF059669),
     warning: Color(0xFFB45309),
     error: Color(0xFFDC2626),
-    glow: Color(0x1AFF2D20),
-    gridLine: Color(0x0D0F172A),
-    scrim: Color(0x590F172A),
+    glow: Color(0x1FE3362C),
+    gridLine: Color(0x0D2A1C1A),
+    scrim: Color(0x592A1C1A),
   );
 
   /// Resolves the active palette from the current [ThemeData].

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'core/localization/app_locale.dart';
+import 'core/data/portfolio_data.dart';
 import 'core/localization/app_scope.dart';
 import 'core/theme/theme.dart';
-import 'portfolio_page.dart';
+import 'portfolio_gate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,21 +19,23 @@ class SalhaPortfolio extends StatefulWidget {
 
 class _SalhaPortfolioState extends State<SalhaPortfolio> {
   bool _isDark = true;
-  AppLocale _locale = AppLocale.en;
+
+  @override
+  void initState() {
+    super.initState();
+    // The portfolio JSON bootstrap starts here — at the application root,
+    // before any page or section is built. It is fully independent of locale,
+    // theme, animations and user interaction, and runs exactly once.
+    PortfolioData.load();
+  }
 
   void _toggleTheme() => setState(() => _isDark = !_isDark);
-
-  void _toggleLocale() => setState(() {
-    _locale = _locale == AppLocale.en ? AppLocale.ar : AppLocale.en;
-  });
 
   @override
   Widget build(BuildContext context) {
     return AppScope(
-      locale: _locale,
       isDark: _isDark,
       toggleTheme: _toggleTheme,
-      toggleLocale: _toggleLocale,
       child: MaterialApp(
         title: 'Tareq Salha | Backend Developer Portfolio',
         debugShowCheckedModeBanner: false,
@@ -42,11 +44,9 @@ class _SalhaPortfolioState extends State<SalhaPortfolio> {
         themeMode: _isDark ? ThemeMode.dark : ThemeMode.light,
         themeAnimationDuration: AppDurations.normal,
         themeAnimationCurve: Curves.easeOut,
-        // Provides RTL layout for the whole tree (including dialogs) when
-        // the Arabic locale is active.
-        builder: (context, child) =>
-            Directionality(textDirection: _locale.direction, child: child!),
-        home: const PortfolioPage(),
+        // The gate owns the loading → error → loaded lifecycle, so the first
+        // meaningful frame is never an empty portfolio.
+        home: const PortfolioGate(),
       ),
     );
   }

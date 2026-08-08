@@ -20,41 +20,52 @@ class ProjectsSection extends StatelessWidget {
     final projects = _projects;
 
     return ContentSection(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(
-            eyebrow: strings.eyebrowProjects,
-            title: strings.projectsTitle,
-            subtitle: strings.projectsSubtitle,
-          ),
-          const SizedBox(height: 48),
-          if (projects.isNotEmpty)
-            AnimatedReveal(
-              offset: 26,
-              child: _FeaturedProjectCard(project: projects.first),
+      child: StaggeredGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StaggeredItem(
+              index: 0,
+              child: SectionHeader(
+                eyebrow: strings.eyebrowProjects,
+                title: strings.projectsTitle,
+                subtitle: strings.projectsSubtitle,
+              ),
             ),
-          const SizedBox(height: 32),
-          if (projects.length > 1)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 900 ? 2 : 1;
-                return GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    crossAxisSpacing: 24,
-                    mainAxisSpacing: 24,
-                    mainAxisExtent: 430,
-                  ),
-                  itemCount: projects.length - 1,
-                  itemBuilder: (context, index) =>
-                      _ProjectCard(project: projects[index + 1]),
-                );
-              },
-            ),
-        ],
+            const SizedBox(height: 48),
+            if (projects.isNotEmpty)
+              StaggeredItem(
+                index: 1,
+                offset: 30,
+                child: _FeaturedProjectCard(project: projects.first),
+              ),
+            if (projects.length > 1) ...[
+              const SizedBox(height: 32),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = constraints.maxWidth >= 900 ? 2 : 1;
+                  final cardWidth =
+                      (constraints.maxWidth - (columns - 1) * 24) / columns;
+                  return Wrap(
+                    spacing: 24,
+                    runSpacing: 24,
+                    children: [
+                      for (var i = 1; i < projects.length; i++)
+                        SizedBox(
+                          width: cardWidth,
+                          child: StaggeredItem(
+                            index: i + 1,
+                            offset: 26,
+                            child: _ProjectCard(project: projects[i]),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -92,7 +103,7 @@ class _FeaturedProjectCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TechChip(
-                        label: project.localizedType(scope.locale),
+                        label: project.projectType,
                         accent: palette.primary,
                       ),
                     ),
@@ -112,7 +123,7 @@ class _FeaturedProjectCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  project.localizedDescription(scope.locale),
+                  project.description,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: styles.bodyMedium.copyWith(
@@ -123,7 +134,7 @@ class _FeaturedProjectCard extends StatelessWidget {
                 _buildTags(context),
                 const SizedBox(height: 20),
                 Text(
-                  '${strings.cardRole}:  ${project.localizedRole(scope.locale).split('\n').first}',
+                  '${strings.cardRole}:  ${project.role.split('\n').first}',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: styles.bodySmall.copyWith(color: palette.textMuted),
@@ -178,7 +189,7 @@ class _ProjectCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TechChip(
-                  label: project.localizedType(scope.locale),
+                  label: project.projectType,
                   accent: palette.primary,
                 ),
                 const SizedBox(height: 12),
@@ -190,7 +201,7 @@ class _ProjectCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  project.localizedDescription(scope.locale),
+                  project.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: styles.bodySmall.copyWith(
@@ -205,7 +216,7 @@ class _ProjectCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${strings.cardRole}: ${project.roleEn.split(' - ').first}',
+                        '${strings.cardRole}: ${project.role.split(' - ').first}',
                         style: styles.caption.copyWith(
                           color: palette.textMuted,
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/theme.dart';
+import 'svg_icon.dart';
 
 enum AppButtonVariant { primary, secondary }
 
@@ -11,6 +12,7 @@ class AppButton extends StatefulWidget {
   final AppButtonVariant variant;
   final bool expanded;
   final double? iconSize;
+  final bool loading;
 
   const AppButton({
     super.key,
@@ -20,6 +22,7 @@ class AppButton extends StatefulWidget {
     this.variant = AppButtonVariant.primary,
     this.expanded = false,
     this.iconSize = 18,
+    this.loading = false,
   });
 
   @override
@@ -50,14 +53,22 @@ class _AppButtonState extends State<AppButton> {
     }
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      cursor: widget.loading
+          ? SystemMouseCursors.wait
+          : SystemMouseCursors.click,
+      onEnter: widget.loading ? null : (_) => setState(() => _hovered = true),
+      onExit: widget.loading ? null : (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTapDown: (_) => setState(() => _pressed = true),
-        onTapCancel: () => setState(() => _pressed = false),
-        onTapUp: (_) => setState(() => _pressed = false),
-        onTap: widget.onTap,
+        onTapDown: widget.loading
+            ? null
+            : (_) => setState(() => _pressed = true),
+        onTapCancel: widget.loading
+            ? null
+            : () => setState(() => _pressed = false),
+        onTapUp: widget.loading
+            ? null
+            : (_) => setState(() => _pressed = false),
+        onTap: widget.loading ? null : widget.onTap,
         child: AnimatedContainer(
           duration: AppDurations.fast,
           curve: Curves.easeOut,
@@ -69,10 +80,10 @@ class _AppButtonState extends State<AppButton> {
             0,
           ),
           decoration: BoxDecoration(
-            color: bg,
+            color: widget.loading ? bg.withValues(alpha: 0.75) : bg,
             borderRadius: BorderRadius.circular(AppRadius.button),
             border: Border.all(color: border),
-            boxShadow: _hovered
+            boxShadow: _hovered && !widget.loading
                 ? [
                     BoxShadow(
                       color: (isPrimary ? palette.primary : palette.accent)
@@ -87,7 +98,17 @@ class _AppButtonState extends State<AppButton> {
             mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (widget.icon != null) ...[
+              if (widget.loading) ...[
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(fg),
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ] else if (widget.icon != null) ...[
                 Icon(widget.icon, size: widget.iconSize, color: fg),
                 const SizedBox(width: 10),
               ],
@@ -110,11 +131,12 @@ class _AppButtonState extends State<AppButton> {
 }
 
 /// Compact round icon button used in the header and footer for social links.
-class AppIconButton extends StatelessWidget {
+class AppIconButton extends StatefulWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback? onTap;
   final double size;
+  final String? svg;
 
   const AppIconButton({
     super.key,
@@ -122,30 +144,62 @@ class AppIconButton extends StatelessWidget {
     required this.tooltip,
     this.onTap,
     this.size = 42,
+    this.svg,
   });
+
+  @override
+  State<AppIconButton> createState() => _AppIconButtonState();
+}
+
+class _AppIconButtonState extends State<AppIconButton> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final hovered = _hovered;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
       child: Tooltip(
-        message: tooltip,
+        message: widget.tooltip,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(AppRadius.chip),
-            onTap: onTap,
+            onTap: widget.onTap,
             child: AnimatedContainer(
               duration: AppDurations.fast,
-              width: size,
-              height: size,
+              curve: Curves.easeOut,
+              width: widget.size,
+              height: widget.size,
+              transform: Matrix4.translationValues(0, hovered ? -2 : 0, 0),
               decoration: BoxDecoration(
-                color: palette.surfaceElevated,
+                color: hovered ? palette.primarySoft : palette.surfaceElevated,
                 borderRadius: BorderRadius.circular(AppRadius.chip),
-                border: Border.all(color: palette.border),
+                border: Border.all(
+                  color: hovered
+                      ? palette.primary.withAlpha(110)
+                      : palette.border,
+                ),
               ),
-              child: Icon(icon, size: 18, color: palette.textSecondary),
+              child: widget.svg != null
+                  ? AppSvgIcon(
+                      name: widget.svg!,
+                      width: 20,
+                      height: 20,
+                      color: hovered
+                          ? palette.primary
+                          : palette.textSecondary,
+                    )
+                  : Icon(
+                      widget.icon,
+                      size: 18,
+                      color: hovered
+                          ? palette.primary
+                          : palette.textSecondary,
+                    ),
             ),
           ),
         ),

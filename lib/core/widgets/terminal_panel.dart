@@ -9,14 +9,12 @@ import 'chips.dart';
 ///
 /// Displays information that is fully supported by the portfolio source.
 class TerminalPanel extends StatelessWidget {
-  final AppLocale locale;
-
-  const TerminalPanel({super.key, required this.locale});
+  const TerminalPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
-    final strings = AppStrings.of(locale);
+    final strings = AppStrings.of;
 
     return Container(
       decoration: BoxDecoration(

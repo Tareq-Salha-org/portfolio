@@ -13,23 +13,27 @@ class AboutSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final scope = AppScope.of(context);
     final strings = scope.strings;
-    final locale = scope.locale;
-    final summary = PortfolioData.summaryOf(locale);
+    final summary = PortfolioData.summary;
 
     return ContentSection(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(
-            eyebrow: strings.eyebrowAbout,
-            title: strings.aboutTitle,
-            subtitle: strings.aboutSubtitle,
-          ),
-          const SizedBox(height: 48),
-          Responsive.isMobile(context)
-              ? _buildMobile(context, summary)
-              : _buildDesktop(context, summary),
-        ],
+      child: StaggeredGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StaggeredItem(
+              index: 0,
+              child: SectionHeader(
+                eyebrow: strings.eyebrowAbout,
+                title: strings.aboutTitle,
+                subtitle: strings.aboutSubtitle,
+              ),
+            ),
+            const SizedBox(height: 48),
+            Responsive.isMobile(context)
+                ? _buildMobile(context, summary)
+                : _buildDesktop(context, summary),
+          ],
+        ),
       ),
     );
   }
@@ -38,7 +42,13 @@ class AboutSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(flex: 7, child: _buildSummaryCard(context, summary)),
+        Expanded(
+          flex: 7,
+          child: StaggeredItem(
+            index: 1,
+            child: _buildSummaryCard(context, summary),
+          ),
+        ),
         const SizedBox(width: 24),
         Expanded(flex: 5, child: _buildFocusGrid(context)),
       ],
@@ -49,7 +59,7 @@ class AboutSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSummaryCard(context, summary),
+        StaggeredItem(index: 1, child: _buildSummaryCard(context, summary)),
         const SizedBox(height: 24),
         _buildFocusGrid(context),
       ],
@@ -86,7 +96,30 @@ class AboutSection extends StatelessWidget {
             summary,
             style: styles.bodyLarge.copyWith(color: palette.textSecondary),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            children: [
+              _MiniStat(
+                value: '${PortfolioData.projectCount}',
+                label: scope.strings.statProjects,
+              ),
+              _MiniStat(
+                value: '${PortfolioData.experienceCount}',
+                label: scope.strings.statExperience,
+              ),
+              _MiniStat(
+                value: '${PortfolioData.totalSkillCount}',
+                label: scope.strings.statSkills,
+              ),
+              _MiniStat(
+                value: '${PortfolioData.languages.length}',
+                label: scope.strings.statLanguages,
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
           Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -99,7 +132,7 @@ class AboutSection extends StatelessWidget {
               _FactChip(
                 icon: Icons.translate,
                 label: PortfolioData.languages
-                    .map((l) => l.localized(scope.locale))
+                    .map((l) => l.name)
                     .join(' · '),
               ),
               _FactChip(
@@ -151,7 +184,14 @@ class AboutSection extends StatelessWidget {
           mainAxisSpacing: 16,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children: items.map((it) => _FocusCard(data: it)).toList(),
+          children: [
+            for (var i = 0; i < items.length; i++)
+              StaggeredItem(
+                index: i + 2,
+                offset: 20,
+                child: _FocusCard(data: items[i]),
+              ),
+          ],
         );
       },
     );
@@ -242,4 +282,46 @@ class _FocusCardData {
     required this.title,
     required this.desc,
   });
+}
+
+class _MiniStat extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _MiniStat({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final styles = AppTextStyles.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: palette.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: palette.primary.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: AppTextStyles.build(
+              context,
+              19,
+              FontWeight.w800,
+              color: palette.primary,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: styles.caption.copyWith(color: palette.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
 }

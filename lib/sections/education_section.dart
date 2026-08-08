@@ -5,13 +5,9 @@ import '../core/localization/app_scope.dart';
 import '../core/theme/theme.dart';
 import '../core/utils/device.dart';
 import '../core/widgets/widgets.dart';
-import '../models/models.dart';
 
 class EducationSection extends StatelessWidget {
   const EducationSection({super.key});
-
-  List<Education> get _education => PortfolioData.education;
-  List<PortfolioLanguage> get _languages => PortfolioData.languages;
 
   @override
   Widget build(BuildContext context) {
@@ -20,48 +16,57 @@ class EducationSection extends StatelessWidget {
     final isMobile = Responsive.isMobile(context);
 
     return ContentSection(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(
-            eyebrow: strings.eyebrowEducation,
-            title: strings.educationTitle,
-            subtitle: '',
-          ),
-          const SizedBox(height: 40),
-          isMobile ? _buildStacked(context) : _buildColumns(context),
-        ],
+      child: StaggeredGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StaggeredItem(
+              index: 0,
+              child: SectionHeader(
+                eyebrow: strings.eyebrowEducation,
+                title: strings.educationTitle,
+                subtitle: '',
+              ),
+            ),
+            const SizedBox(height: 40),
+            isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const StaggeredItem(index: 1, child: _EducationCard()),
+                      const SizedBox(height: 24),
+                      const StaggeredItem(index: 2, child: _LanguagesCard()),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Expanded(
+                        flex: 6,
+                        child: StaggeredItem(index: 1, child: _EducationCard()),
+                      ),
+                      const SizedBox(width: 24),
+                      const Expanded(
+                        flex: 5,
+                        child: StaggeredItem(index: 2, child: _LanguagesCard()),
+                      ),
+                    ],
+                  ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildColumns(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(flex: 6, child: _buildEducationCard(context)),
-        const SizedBox(width: 24),
-        Expanded(flex: 5, child: _buildLanguagesCard(context)),
-      ],
-    );
-  }
+class _EducationCard extends StatelessWidget {
+  const _EducationCard();
 
-  Widget _buildStacked(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildEducationCard(context),
-        const SizedBox(height: 24),
-        _buildLanguagesCard(context),
-      ],
-    );
-  }
-
-  Widget _buildEducationCard(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final styles = AppTextStyles.of(context);
-    final scope = AppScope.of(context);
-    final education = _education;
+    final education = PortfolioData.education;
     if (education.isEmpty) return const SizedBox.shrink();
     final edu = education.first;
 
@@ -89,43 +94,28 @@ class EducationSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  edu.localizedDegree(scope.locale),
+                  edu.degree,
                   style: styles.titleLarge,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  edu.localizedInstitution(scope.locale),
+                  edu.institution,
                   style: styles.bodyMedium.copyWith(
                     color: palette.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 8,
                   children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 15,
-                      color: palette.textMuted,
+                    _MetaItem(
+                      icon: Icons.location_on_outlined,
+                      label: edu.location,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      edu.location,
-                      style: styles.bodySmall.copyWith(
-                        color: palette.textMuted,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.date_range_outlined,
-                      size: 15,
-                      color: palette.textMuted,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      edu.period,
-                      style: styles.bodySmall.copyWith(
-                        color: palette.textMuted,
-                      ),
+                    _MetaItem(
+                      icon: Icons.date_range_outlined,
+                      label: edu.period,
                     ),
                   ],
                 ),
@@ -136,8 +126,42 @@ class EducationSection extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildLanguagesCard(BuildContext context) {
+class _MetaItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _MetaItem({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: palette.textMuted),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: AppTextStyles.build(
+            context,
+            13.5,
+            FontWeight.w400,
+            color: palette.textMuted,
+            height: 1.3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LanguagesCard extends StatelessWidget {
+  const _LanguagesCard();
+
+  @override
+  Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final styles = AppTextStyles.of(context);
     final scope = AppScope.of(context);
@@ -159,8 +183,8 @@ class EducationSection extends StatelessWidget {
             spacing: 12,
             runSpacing: 12,
             children: [
-              for (final language in _languages)
-                _LanguageTile(name: language.localized(scope.locale)),
+              for (final language in PortfolioData.languages)
+                _LanguageTile(name: language.name),
             ],
           ),
         ],

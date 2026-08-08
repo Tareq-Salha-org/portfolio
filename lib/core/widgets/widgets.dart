@@ -1,8 +1,11 @@
-export 'app_buttons.dart';
+export 'animated_background.dart';
 export 'animated_reveal.dart';
+export 'app_buttons.dart';
 export 'chips.dart';
 export 'content_section.dart';
 export 'grid_background.dart';
+export 'scroll_effects.dart';
 export 'section_header.dart';
+export 'stagger.dart';
 export 'svg_icon.dart';
 export 'terminal_panel.dart';

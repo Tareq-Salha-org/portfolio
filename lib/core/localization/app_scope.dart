@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'app_locale.dart';
 
-/// Inherited scope exposing the active locale and toggles to all sections
-/// without threading callbacks through the widget tree.
+/// Inherited scope exposing theme state and toggles to all sections without
+/// threading callbacks through the widget tree.
+///
+/// The app is English-only, so no locale state lives here — portfolio content
+/// can never be tied to a language switch.
 class AppScope extends InheritedWidget {
-  final AppLocale locale;
   final bool isDark;
-  final void Function() toggleLocale;
   final void Function() toggleTheme;
 
   const AppScope({
     super.key,
-    required this.locale,
     required this.isDark,
-    required this.toggleLocale,
     required this.toggleTheme,
     required super.child,
   });
@@ -30,17 +29,10 @@ class AppScope extends InheritedWidget {
     return element?.widget as AppScope;
   }
 
-  AppStrings get strings => AppStrings.of(locale);
-
-  bool get ar => locale == AppLocale.ar;
-
-  TextDirection get direction => locale.direction;
+  AppStrings get strings => AppStrings.of;
 
   @override
   bool updateShouldNotify(AppScope oldWidget) {
-    return locale != oldWidget.locale ||
-        isDark != oldWidget.isDark ||
-        toggleLocale != oldWidget.toggleLocale ||
-        toggleTheme != oldWidget.toggleTheme;
+    return isDark != oldWidget.isDark || toggleTheme != oldWidget.toggleTheme;
   }
 }

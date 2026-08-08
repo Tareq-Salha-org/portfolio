@@ -56,39 +56,49 @@ class CapabilitiesSection extends StatelessWidget {
     final strings = scope.strings;
 
     return ContentSection(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(
-            eyebrow: strings.eyebrowCapabilities,
-            title: strings.capabilitiesTitle,
-            subtitle: strings.capabilitiesSubtitle,
-          ),
-          const SizedBox(height: 48),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              final columns = width >= 1100
-                  ? 4
-                  : width >= 680
-                  ? 2
-                  : 1;
-              return GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  mainAxisExtent: 150,
-                ),
-                itemCount: _items.length,
-                itemBuilder: (context, index) =>
-                    _CapabilityCard(item: _items[index]),
-              );
-            },
-          ),
-        ],
+      child: StaggeredGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StaggeredItem(
+              index: 0,
+              child: SectionHeader(
+                eyebrow: strings.eyebrowCapabilities,
+                title: strings.capabilitiesTitle,
+                subtitle: strings.capabilitiesSubtitle,
+              ),
+            ),
+            const SizedBox(height: 48),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final columns = width >= 1100
+                    ? 4
+                    : width >= 680
+                    ? 2
+                    : 1;
+                final cardWidth =
+                    (width - (columns - 1) * 20) / columns;
+                return Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  children: [
+                    for (var i = 0; i < _items.length; i++)
+                      SizedBox(
+                        width: cardWidth,
+                        child: StaggeredItem(
+                          index: i + 1,
+                          offset: 24,
+                          child: _CapabilityCard(item: _items[i]),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -111,33 +121,31 @@ class _CapabilityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final styles = AppTextStyles.of(context);
-    return HoverCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: palette.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(item.icon, size: 19, color: palette.primary),
+
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: palette.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
           ),
-          const SizedBox(height: 14),
-          Text(item.title, style: styles.titleMedium),
-          const SizedBox(height: 4),
-          Expanded(
-            child: Text(
-              item.desc,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: styles.bodySmall.copyWith(color: palette.textMuted),
-            ),
-          ),
-        ],
-      ),
+          child: Icon(item.icon, size: 19, color: palette.primary),
+        ),
+        const SizedBox(height: 14),
+        Text(item.title, style: styles.titleMedium),
+        const SizedBox(height: 4),
+        Text(
+          item.desc,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: styles.bodySmall.copyWith(color: palette.textMuted),
+        ),
+      ],
     );
+
+    return HoverCard(padding: const EdgeInsets.all(20), child: body);
   }
 }

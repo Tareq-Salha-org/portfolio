@@ -1,41 +1,31 @@
-import '../core/localization/app_locale.dart';
-
 /// Parsed portfolio project.
 ///
-/// The original `portfolio_data.json` stores project descriptions and
-/// contributions in Arabic, alongside English context. Both forms are kept so
-/// the project can honour the bilingual design without inventing facts.
+/// `portfolio_data.json` stores the canonical project descriptions in Arabic;
+/// [English] holds faithful English translations used by this English-only
+/// site. All content exposed here is English.
 class Project {
   final String id;
   final String name;
-  final String projectTypeEn;
-  final String? projectTypeAr;
-  final String descriptionAr;
-  final String descriptionEn;
+  final String projectType;
+  final String description;
   final String primaryLanguage;
   final Map<String, double> languagesBreakdown;
   final List<String> techStack;
-  final String roleEn;
-  final String roleAr;
-  final List<String> contributionsAr;
-  final List<String> contributionsEn;
+  final String role;
+  final List<String> contributions;
   final String? demoUrl;
   final bool isArchived;
 
   const Project({
     required this.id,
     required this.name,
-    required this.projectTypeEn,
-    this.projectTypeAr,
-    required this.descriptionAr,
-    required this.descriptionEn,
+    required this.projectType,
+    required this.description,
     required this.primaryLanguage,
     required this.languagesBreakdown,
     required this.techStack,
-    required this.roleEn,
-    required this.roleAr,
-    required this.contributionsAr,
-    required this.contributionsEn,
+    required this.role,
+    required this.contributions,
     this.demoUrl,
     this.isArchived = false,
   });
@@ -45,53 +35,28 @@ class Project {
     return Project(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
-      projectTypeEn: map['project_type'] ?? '',
-      projectTypeAr: ARN.projectType(map['project_type'] ?? ''),
-      descriptionAr: _clean(map['description'] ?? ''),
-      descriptionEn: source.description,
+      projectType: map['project_type'] ?? '',
+      description: source.description,
       primaryLanguage: map['primary_language'] ?? 'PHP',
       languagesBreakdown:
           (map['languages_breakdown'] as Map<String, dynamic>? ?? {}).map(
             (k, v) => MapEntry(k, (v as num).toDouble()),
           ),
       techStack: List<String>.from(map['tech_stack'] ?? []),
-      roleEn: source.role,
-      roleAr: _clean(map['role_responsibility'] ?? ''),
-      contributionsEn: source.contributions,
-      contributionsAr: List<String>.from(
-        (map['notable_contributions'] as List<dynamic>? ?? []).map(
-          (e) => _clean('$e'),
-        ),
-      ),
+      role: source.role,
+      contributions: source.contributions,
       demoUrl: map['demo_url'],
       isArchived: map['is_archived'] ?? false,
     );
   }
 
-  String localizedType(AppLocale locale) =>
-      locale == AppLocale.ar && (projectTypeAr?.isNotEmpty ?? false)
-      ? projectTypeAr!
-      : projectTypeEn;
-
-  String localizedDescription(AppLocale locale) =>
-      locale == AppLocale.ar ? descriptionAr : descriptionEn;
-
-  String localizedRole(AppLocale locale) =>
-      locale == AppLocale.ar ? roleAr : roleEn;
-
-  List<String> localizedContributions(AppLocale locale) =>
-      locale == AppLocale.ar ? contributionsAr : contributionsEn;
-
   /// Top technology badges for visual composition.
   List<String> get heroTech => techStack.take(3).toList();
-
-  static String _clean(String s) =>
-      s.replaceAll(RegExp(r'\[cite:\s*\d+\]'), '').trim();
 }
 
 /// Faithful English translations of the four project descriptions, so the
 /// English site does not mix languages. These are translations — the factual
-/// Arabic source remains the canonical description.
+/// Arabic source in the JSON remains the canonical description.
 class English {
   English._();
 
@@ -153,22 +118,4 @@ class EnglishSlice {
     required this.role,
     required this.contributions,
   });
-}
-
-/// Arabic labels for project types.
-class ARN {
-  ARN._();
-
-  static String? projectType(String type) {
-    const map = <String, String>{
-      'Freelance / Educational Platform Backend':
-          'فريلانس / خلفية منصة تعليمية',
-      'Social & Matchmaking Platform Backend': 'خلفية منصة تواصل وتوافق',
-      'On-Demand Home Services Booking System':
-          'نظام حجز خدمات منزلية عند الطلب',
-      'ERP System Enhancement & E-Invoicing':
-          'تطوير نظام ERP والفوترة الإلكترونية',
-    };
-    return map[type];
-  }
 }

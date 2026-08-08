@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
+import '../core/animations/animations.dart';
 import '../core/data/portfolio_data.dart';
 import '../core/localization/app_scope.dart';
 import '../core/theme/theme.dart';
@@ -9,64 +8,140 @@ import '../core/utils/utils.dart';
 import '../core/widgets/widgets.dart';
 
 class HeroSection extends StatelessWidget {
+  final ScrollController? scrollController;
   final VoidCallback onProjectsTap;
   final VoidCallback onContactTap;
 
   const HeroSection({
     super.key,
+    this.scrollController,
     required this.onProjectsTap,
     required this.onContactTap,
   });
 
+  /// Responsive hero headline size — deliberately larger on desktop, compact
+  /// on phones so it never dominates the viewport.
+  double _headlineSize(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 380) return 34;
+    if (width < 480) return 38;
+    if (width < 600) return 42;
+    if (width < 900) return 48;
+    if (width < 1280) return 54;
+    if (width < 1600) return 60;
+    return 66;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final palette = AppPalette.of(context);
-    final scope = AppScope.of(context);
     final isMobile = Responsive.isMobile(context);
+    final isDesktop = Responsive.isDesktop(context);
 
-    final terminal = TerminalPanel(locale: scope.locale);
+    final terminal = _buildVisual(context);
 
-    return ContentSection(
+    // One staggered sequence for the whole hero: badge → headline → intro →
+    // actions → social row → technical visual. The same indices work for the
+    // side-by-side desktop layout and the stacked mobile layout.
+    Widget content = ContentSection(
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.sectionHPadding(context),
-        vertical: isMobile ? 48 : 64,
+        vertical: isMobile ? 44 : 64,
       ),
-      child: Stack(
-        children: [
-          if (!isMobile)
-            PositionedDirectional(
-              start: -80,
-              top: 40,
-              child: GlowBackdrop(color: palette.primary, size: 460),
-            ),
-          Responsive.isDesktop(context)
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(flex: 6, child: _buildHeroCopy(context)),
-                    const SizedBox(width: 40),
-                    Expanded(
-                      flex: 4,
-                      child: _Entrance(
-                        delay: const Duration(milliseconds: 300),
-                        child: terminal,
-                      ),
+      child: StaggeredGroup(
+        duration: MotionTokens.entrance,
+        intervalFraction: 0.11,
+        itemFraction: 0.4,
+        child: isDesktop
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(flex: 6, child: _buildHeroCopy(context)),
+                  const SizedBox(width: 40),
+                  Expanded(
+                    flex: 4,
+                    child: StaggeredItem(index: 6, offset: 30, child: terminal),
+                  ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeroCopy(context),
+                  const SizedBox(height: 40),
+                  StaggeredItem(index: 6, offset: 30, child: terminal),
+                  if (!isMobile) ...[
+                    const SizedBox(height: 28),
+                    const StaggeredItem(
+                      index: 7,
+                      offset: 16,
+                      child: _ScrollHint(),
                     ),
                   ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeroCopy(context),
-                    const SizedBox(height: 40),
-                    _Entrance(
-                      delay: const Duration(milliseconds: 250),
-                      child: terminal,
-                    ),
-                  ],
+                ],
+              ),
+      ),
+    );
+
+    // The hero fades and drifts upward as the user scrolls away, while the
+    // page background (parallax layer) moves slower behind it.
+    if (scrollController != null) {
+      content = ParallaxElement(
+        controller: scrollController!,
+        factor: 0.22,
+        range: 480,
+        child: content,
+      );
+    }
+    return content;
+  }
+
+  Widget _buildVisual(BuildContext context) {
+    final palette = AppPalette.of(context);
+    final isDesktop = Responsive.isDesktop(context);
+
+    final terminal = const TerminalPanel();
+
+    return Stack(
+      children: [
+        if (isDesktop) ...[
+          // Subtle floating technical ornaments behind the terminal.
+          Positioned(
+            top: -18,
+            right: -10,
+            child: FloatingElement(
+              amplitude: 7,
+              phase: 1.2,
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: palette.primary.withValues(alpha: 0.22),
+                  ),
                 ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -14,
+            left: -18,
+            child: FloatingElement(
+              amplitude: 10,
+              phase: 3.4,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: palette.primary.withValues(alpha: 0.35),
+                ),
+              ),
+            ),
+          ),
         ],
-      ),
+        terminal,
+      ],
     );
   }
 
@@ -75,39 +150,61 @@ class HeroSection extends StatelessWidget {
     final scope = AppScope.of(context);
     final styles = AppTextStyles.of(context);
     final strings = scope.strings;
+    final headlineSize = _headlineSize(context);
 
-    return _Entrance(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildEyebrow(context),
-          const SizedBox(height: 24),
-          Text.rich(
+    final headline = styles.display.copyWith(
+      fontSize: headlineSize,
+      height: 1.12,
+      letterSpacing: -1.4,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        StaggeredItem(index: 0, offset: 20, child: _buildEyebrow(context)),
+        const SizedBox(height: 22),
+        StaggeredItem(
+          index: 1,
+          offset: 28,
+          child: Text(
+            PortfolioData.fullName,
+            style: headline,
+          ),
+        ),
+        const SizedBox(height: 14),
+        StaggeredItem(
+          index: 2,
+          offset: 26,
+          child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: strings.heroHeadline1, style: styles.display),
+                TextSpan(text: strings.heroHeadline1, style: headline),
                 TextSpan(text: '\n'),
                 TextSpan(
                   text: strings.heroHeadline2,
-                  style: styles.display.copyWith(color: palette.primary),
+                  style: headline.copyWith(color: palette.primary),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          ConstrainedBox(
+        ),
+        const SizedBox(height: 18),
+        StaggeredItem(
+          index: 3,
+          offset: 28,
+          child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 560),
             child: Text(
               strings.heroIntro,
               style: styles.bodyLarge.copyWith(color: palette.textSecondary),
             ),
           ),
-          const SizedBox(height: 32),
-          _buildActions(context),
-          const SizedBox(height: 28),
-          _buildSocialRow(context),
-        ],
-      ),
+        ),
+        const SizedBox(height: 28),
+        StaggeredItem(index: 4, offset: 26, child: _buildActions(context)),
+        const SizedBox(height: 24),
+        StaggeredItem(index: 5, offset: 22, child: _buildSocialRow(context)),
+      ],
     );
   }
 
@@ -139,9 +236,11 @@ class HeroSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Text(
-            PortfolioData.role,
-            style: styles.labelMedium.copyWith(color: palette.textPrimary),
+          Flexible(
+            child: Text(
+              PortfolioData.role,
+              style: styles.labelMedium.copyWith(color: palette.textPrimary),
+            ),
           ),
           Container(
             width: 1,
@@ -183,6 +282,7 @@ class HeroSection extends StatelessWidget {
     final palette = AppPalette.of(context);
     final styles = AppTextStyles.of(context);
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Find me:',
@@ -204,6 +304,7 @@ class HeroSection extends StatelessWidget {
         AppIconButton(
           icon: Icons.code,
           tooltip: 'GitHub',
+          svg: 'github',
           onTap: () => AppLinks.open(PortfolioData.github),
         ),
       ],
@@ -211,59 +312,34 @@ class HeroSection extends StatelessWidget {
   }
 }
 
-/// Smooth entrance animation for the hero content.
-///
-/// Fades and lifts content on first build. Respects reduced-motion.
-class _Entrance extends StatefulWidget {
-  final Widget child;
-  final Duration delay;
-
-  const _Entrance({required this.child, this.delay = Duration.zero});
-
-  @override
-  State<_Entrance> createState() => _EntranceState();
-}
-
-class _EntranceState extends State<_Entrance>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _opacity;
-  late final Animation<Offset> _slide;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Motion.duration(const Duration(milliseconds: 700)),
-    );
-    _opacity = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _slide = Tween<Offset>(
-      begin: const Offset(0, 0.03),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-    if (Motion.reduceMotion) {
-      _controller.value = 1;
-    } else {
-      _timer = Timer(Motion.duration(widget.delay), () {
-        if (mounted) _controller.forward();
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
+/// Gentle bouncing scroll hint shown below the hero on larger screens.
+class _ScrollHint extends StatelessWidget {
+  const _ScrollHint();
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _opacity,
-      child: SlideTransition(position: _slide, child: widget.child),
+    final palette = AppPalette.of(context);
+    final styles = AppTextStyles.of(context);
+    return IgnorePointer(
+      child: FloatingElement(
+        amplitude: 5,
+        duration: const Duration(milliseconds: 2600),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppScope.of(context).strings.heroScroll,
+              style: styles.caption.copyWith(color: palette.textMuted),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: palette.primary,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

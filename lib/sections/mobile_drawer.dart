@@ -1,21 +1,98 @@
 import 'package:flutter/material.dart';
 
+import '../core/animations/animations.dart';
 import '../core/data/portfolio_data.dart';
 import '../core/localization/app_scope.dart';
 import '../core/theme/theme.dart';
 import '../core/utils/utils.dart';
+import '../core/widgets/svg_icon.dart';
 
-/// Full-screen mobile navigation overlay with slide-in animation.
-class MobileDrawer extends StatelessWidget {
+/// Full-screen mobile navigation overlay with a polished staggered entrance.
+///
+/// When [isOpen] becomes true the header, nav items and action buttons fade
+/// and slide in sequentially with the Laravel-red accent; closing reverses the
+/// sequence smoothly. The overlay itself slides in from the edge in the page.
+class MobileDrawer extends StatefulWidget {
+  final bool isOpen;
+  final String activeSection;
   final ValueChanged<String> onNavigate;
+  final VoidCallback onClose;
 
-  const MobileDrawer({super.key, required this.onNavigate});
+  const MobileDrawer({
+    super.key,
+    required this.isOpen,
+    required this.activeSection,
+    required this.onNavigate,
+    required this.onClose,
+  });
+
+  @override
+  State<MobileDrawer> createState() => _MobileDrawerState();
+}
+
+class _MobileDrawerState extends State<MobileDrawer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _progress;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Motion.duration(const Duration(milliseconds: 420)),
+    );
+    _progress = CurvedAnimation(
+      parent: _controller,
+      curve: MotionCurves.easeOutCubic,
+    );
+    if (!widget.isOpen) _controller.value = 0;
+  }
+
+  @override
+  void didUpdateWidget(MobileDrawer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isOpen == oldWidget.isOpen) return;
+    if (widget.isOpen) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Animation<double> _slice(double start, double end) => CurvedAnimation(
+    parent: _progress,
+    curve: Interval(start, end, curve: MotionCurves.gentle),
+  );
+
+  Widget _item(Widget child, int index) {
+    final start = (index * 0.07).clamp(0.0, 0.8);
+    final anim = _slice(start, (start + 0.5).clamp(0.0, 1.0));
+    if (Motion.reduceMotion) return child;
+    return FadeTransition(
+      opacity: anim,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.12),
+          end: Offset.zero,
+        ).animate(anim),
+        child: child,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
     final scope = AppScope.of(context);
     final styles = AppTextStyles.of(context);
+    final active = widget.activeSection;
 
     final items = <_DrawerItem>[
       _DrawerItem(Icons.person_outline, scope.strings.navAbout, 'about'),
@@ -37,76 +114,119 @@ class MobileDrawer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      PortfolioData.fullName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: styles.titleMedium.copyWith(
-                        color: palette.textPrimary,
+              _item(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [palette.primary, palette.accent],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'TS',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Flexible(
+                            child: Text(
+                              PortfolioData.fullName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: styles.titleMedium.copyWith(
+                                color: palette.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  _AppEntry(onTap: () => onNavigate('')),
-                ],
+                    _AppEntry(onTap: widget.onClose),
+                  ],
+                ),
+                0,
               ),
-              const SizedBox(height: 40),
-              for (final item in items)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _DrawerItemLink(
-                    item: item,
-                    onTap: () => onNavigate(item.key),
+              const SizedBox(height: 36),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < items.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _item(
+                            _DrawerItemLink(
+                              item: items[i],
+                              isActive: active == items[i].key,
+                              onTap: () => widget.onNavigate(items[i].key),
+                            ),
+                            i + 1,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildAction(
-                      context,
-                      Icons.code,
-                      'GitHub',
-                      () => AppLinks.open(PortfolioData.github),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildAction(
-                      context,
-                      Icons.link,
-                      'LinkedIn',
-                      () => AppLinks.open(PortfolioData.linkedIn),
-                    ),
-                  ),
-                ],
               ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildAction(
-                      context,
-                      scope.isDark
-                          ? Icons.light_mode_outlined
-                          : Icons.dark_mode_outlined,
-                      scope.isDark ? 'Light' : 'Dark',
-                      scope.toggleTheme,
+              const SizedBox(height: 20),
+              _item(
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildAction(
+                        context,
+                        icon: Icons.code,
+                        svg: 'github',
+                        label: 'GitHub',
+                        onTap: () => AppLinks.open(PortfolioData.github),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildAction(
-                      context,
-                      Icons.language,
-                      scope.locale.label,
-                      scope.toggleLocale,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildAction(
+                        context,
+                        icon: Icons.link,
+                        label: 'LinkedIn',
+                        onTap: () => AppLinks.open(PortfolioData.linkedIn),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                items.length + 1,
+              ),
+              const SizedBox(height: 10),
+              _item(
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildAction(
+                        context,
+                        icon: scope.isDark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
+                        label: scope.isDark ? 'Light' : 'Dark',
+                        onTap: scope.toggleTheme,
+                      ),
+                    ),
+                  ],
+                ),
+                items.length + 2,
               ),
             ],
           ),
@@ -116,11 +236,12 @@ class MobileDrawer extends StatelessWidget {
   }
 
   Widget _buildAction(
-    BuildContext context,
-    IconData icon,
-    String label,
-    VoidCallback onTap,
-  ) {
+    BuildContext context, {
+    required IconData icon,
+    String? svg,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     final palette = AppPalette.of(context);
     return Material(
       color: Colors.transparent,
@@ -137,7 +258,10 @@ class MobileDrawer extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 18, color: palette.textSecondary),
+              if (svg != null)
+                AppSvgIcon(name: svg, width: 18, height: 18, color: palette.textSecondary)
+              else
+                Icon(icon, size: 18, color: palette.textSecondary),
               const SizedBox(width: 8),
               Text(
                 label,
@@ -158,9 +282,14 @@ class MobileDrawer extends StatelessWidget {
 
 class _DrawerItemLink extends StatelessWidget {
   final _DrawerItem item;
+  final bool isActive;
   final VoidCallback onTap;
 
-  const _DrawerItemLink({required this.item, required this.onTap});
+  const _DrawerItemLink({
+    required this.item,
+    required this.isActive,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -171,24 +300,49 @@ class _DrawerItemLink extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
-        child: Container(
+        child: AnimatedContainer(
+          duration: AppDurations.fast,
+          curve: Curves.easeOut,
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           decoration: BoxDecoration(
-            color: palette.surface,
+            color: isActive ? palette.primarySoft : palette.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: palette.border),
+            border: Border.all(
+              color: isActive ? palette.primaryBorder : palette.border,
+            ),
           ),
           child: Row(
             children: [
-              Icon(item.icon, size: 20, color: palette.primary),
-              const SizedBox(width: 14),
-              Text(
-                item.label,
-                style: styles.bodyMedium.copyWith(color: palette.textPrimary),
+              Icon(
+                item.icon,
+                size: 20,
+                color: isActive ? palette.primary : palette.textSecondary,
               ),
-              const Spacer(),
-              Icon(Icons.chevron_right, size: 18, color: palette.textMuted),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  item.label,
+                  style: styles.bodyMedium.copyWith(
+                    color: isActive ? palette.primary : palette.textPrimary,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              Container(
+                width: isActive ? 6 : 0,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: palette.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: isActive ? palette.primary : palette.textMuted,
+              ),
             ],
           ),
         ),
@@ -219,8 +373,8 @@ class _AppEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Icon(Icons.close, size: 24, color: palette.textSecondary),
+          padding: const EdgeInsets.all(8),
+          child: Icon(Icons.close, size: 22, color: palette.textSecondary),
         ),
       ),
     );

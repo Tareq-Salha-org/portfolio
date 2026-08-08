@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../core/data/portfolio_data.dart';
@@ -6,8 +8,12 @@ import '../core/theme/theme.dart';
 import '../core/utils/utils.dart';
 import '../core/widgets/widgets.dart';
 
-/// Sticky header bar with logo, desktop nav, GitHub action and theme/locale
-/// toggles. Switches to a compact bar with a menu button below desktop width.
+/// Sticky header bar with logo, desktop nav, GitHub action and theme toggle.
+/// Switches to a compact bar with a menu button below desktop width.
+///
+/// Reacts to scrolling: at the top it is fully transparent and blends into the
+/// hero; once scrolled it shrinks slightly, gains a glass blur (desktop), a
+/// bottom border and a soft shadow. The transition is animated, never a jump.
 class HeaderSection extends StatelessWidget {
   final bool scrolled;
   final String activeSection;
@@ -23,6 +29,7 @@ class HeaderSection extends StatelessWidget {
   });
 
   static const double _height = 68;
+  static const double _compactHeight = 60;
 
   static const List<String> _navKeys = [
     'about',
@@ -55,6 +62,7 @@ class HeaderSection extends StatelessWidget {
     final palette = AppPalette.of(context);
     final scope = AppScope.of(context);
     final isCompact = !Responsive.isDesktop(context);
+    final isMobile = Responsive.isMobile(context);
 
     final toggleTheme = _Toggle(
       icon: scope.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
@@ -62,36 +70,43 @@ class HeaderSection extends StatelessWidget {
       onTap: scope.toggleTheme,
     );
 
-    final toggleLocale = _Toggle(
-      label: scope.locale.label,
-      tooltip: 'Switch language',
-      onTap: scope.toggleLocale,
-    );
-
-    return Container(
-      height: _height,
+    final bar = AnimatedContainer(
+      duration: AppDurations.normal,
+      curve: Curves.easeOutCubic,
+      height: scrolled ? _compactHeight : _height,
       decoration: BoxDecoration(
         color: scrolled
-            ? palette.background.withValues(alpha: 0.9)
+            ? palette.background.withValues(alpha: isMobile ? 0.94 : 0.78)
             : Colors.transparent,
         border: scrolled
             ? Border(bottom: BorderSide(color: palette.border))
+            : null,
+        boxShadow: scrolled
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.10),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ]
             : null,
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: isCompact ? 14 : 28),
         child: Row(
           children: [
-            _Logo(
-              text: PortfolioData.fullName,
-              subtitle: 'Backend Developer',
-              onTap: () => onNavigate('home'),
+            // Flexible so the brand name can ellipsize instead of overflowing
+            // on narrow phones (e.g. 320px).
+            Flexible(
+              child: _Logo(
+                text: PortfolioData.fullName,
+                subtitle: PortfolioData.role,
+                onTap: () => onNavigate('home'),
+              ),
             ),
             const Spacer(),
             if (isCompact) ...[
               toggleTheme,
-              const SizedBox(width: 6),
-              toggleLocale,
               const SizedBox(width: 6),
               _Toggle(icon: Icons.menu, tooltip: 'Menu', onTap: onMenuPressed),
             ] else ...[
@@ -105,13 +120,23 @@ class HeaderSection extends StatelessWidget {
               _GitHubButton(scope.strings.navGitHub),
               const SizedBox(width: 8),
               toggleTheme,
-              const SizedBox(width: 4),
-              toggleLocale,
             ],
           ],
         ),
       ),
     );
+
+    // Glass blur only on desktop — mobile web keeps a solid-ish bar for
+    // performance and readability.
+    if (scrolled && !isMobile) {
+      return ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: bar,
+        ),
+      );
+    }
+    return bar;
   }
 }
 
@@ -161,33 +186,39 @@ class _Logo extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  text,
-                  style: AppTextStyles.build(
-                    context,
-                    15,
-                    FontWeight.w700,
-                    color: palette.textPrimary,
-                    height: 1.15,
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.build(
+                      context,
+                      15,
+                      FontWeight.w700,
+                      color: palette.textPrimary,
+                      height: 1.15,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.build(
-                    context,
-                    11,
-                    FontWeight.w500,
-                    color: palette.textMuted,
-                    height: 1.15,
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.build(
+                      context,
+                      11,
+                      FontWeight.w500,
+                      color: palette.textMuted,
+                      height: 1.15,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -196,7 +227,7 @@ class _Logo extends StatelessWidget {
   }
 }
 
-class _NavLabel extends StatelessWidget {
+class _NavLabel extends StatefulWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
@@ -208,39 +239,64 @@ class _NavLabel extends StatelessWidget {
   });
 
   @override
+  State<_NavLabel> createState() => _NavLabelState();
+}
+
+class _NavLabelState extends State<_NavLabel> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final active = widget.isActive;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: widget.onTap,
         behavior: HitTestBehavior.opaque,
         child: SizedBox(
-          height: 68,
+          height: 60,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  label,
+                AnimatedDefaultTextStyle(
+                  duration: AppDurations.fast,
+                  curve: Curves.easeOut,
                   style: AppTextStyles.build(
                     context,
                     14,
-                    isActive ? FontWeight.w600 : FontWeight.w500,
-                    color: isActive ? palette.primary : palette.textSecondary,
+                    active || _hovered ? FontWeight.w600 : FontWeight.w500,
+                    color: active
+                        ? palette.primary
+                        : (_hovered
+                              ? palette.textPrimary
+                              : palette.textSecondary),
                     height: 1.2,
                   ),
+                  child: Text(widget.label),
                 ),
                 const SizedBox(height: 5),
                 AnimatedContainer(
                   duration: AppDurations.fast,
-                  width: isActive ? 16 : 0,
+                  curve: Curves.easeOut,
+                  width: active ? 18 : (_hovered ? 8 : 0),
                   height: 2,
                   decoration: BoxDecoration(
                     color: palette.primary,
                     borderRadius: BorderRadius.circular(1),
+                    boxShadow: active
+                        ? [
+                            BoxShadow(
+                              color: palette.primary.withValues(alpha: 0.6),
+                              blurRadius: 6,
+                            ),
+                          ]
+                        : null,
                   ),
                 ),
               ],
@@ -253,14 +309,12 @@ class _NavLabel extends StatelessWidget {
 }
 
 class _Toggle extends StatelessWidget {
-  final IconData? icon;
-  final String? label;
+  final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
 
   const _Toggle({
-    this.icon,
-    this.label,
+    required this.icon,
     required this.tooltip,
     required this.onTap,
   });
@@ -279,18 +333,7 @@ class _Toggle extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: icon != null
-                  ? Icon(icon, size: 19, color: palette.textSecondary)
-                  : Text(
-                      label ?? '',
-                      style: AppTextStyles.build(
-                        context,
-                        13.5,
-                        FontWeight.w700,
-                        color: palette.textSecondary,
-                        height: 1.2,
-                      ),
-                    ),
+              child: Icon(icon, size: 19, color: palette.textSecondary),
             ),
           ),
         ),
@@ -299,24 +342,50 @@ class _Toggle extends StatelessWidget {
   }
 }
 
-class _GitHubButton extends StatelessWidget {
+class _GitHubButton extends StatefulWidget {
   final String label;
 
   const _GitHubButton(this.label);
 
   @override
+  State<_GitHubButton> createState() => _GitHubButtonState();
+}
+
+class _GitHubButtonState extends State<_GitHubButton> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final hovered = _hovered;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: () => AppLinks.open(PortfolioData.github),
-        child: Container(
+        child: AnimatedContainer(
+          duration: AppDurations.fast,
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, hovered ? -1.5 : 0, 0),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: palette.backgroundAlt,
+            color: hovered ? palette.primarySoft : palette.backgroundAlt,
             borderRadius: BorderRadius.circular(AppRadius.chip),
-            border: Border.all(color: palette.border),
+            border: Border.all(
+              color: hovered
+                  ? palette.primary.withAlpha(110)
+                  : palette.border,
+            ),
+            boxShadow: hovered
+                ? [
+                    BoxShadow(
+                      color: palette.primary.withValues(alpha: 0.22),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -325,16 +394,16 @@ class _GitHubButton extends StatelessWidget {
                 name: 'github',
                 width: 16,
                 height: 16,
-                color: palette.textSecondary,
+                color: hovered ? palette.primary : palette.textSecondary,
               ),
               const SizedBox(width: 8),
               Text(
-                label,
+                widget.label,
                 style: AppTextStyles.build(
                   context,
                   13.5,
                   FontWeight.w600,
-                  color: palette.textSecondary,
+                  color: hovered ? palette.primary : palette.textSecondary,
                   height: 1.2,
                 ),
               ),

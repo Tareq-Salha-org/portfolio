@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'core/data/portfolio_data.dart';
 import 'core/theme/theme.dart';
+import 'core/widgets/widgets.dart';
 import 'sections/sections.dart';
 
 /// Global keys used to resolve section positions for scroll navigation.
@@ -25,12 +25,12 @@ class PortfolioPage extends StatefulWidget {
 
 class _PortfolioPageState extends State<PortfolioPage> {
   final _scrollController = ScrollController();
+  final _progress = ValueNotifier<double>(0);
 
   bool _menuOpen = false;
   bool _scrolled = false;
   String _activeSection = 'home';
   double _lastScrollPixels = -100;
-  double _progress = 0;
 
   /// Scroll order used to resolve the active nav section.
   static const List<(String key, String navTarget)> _scrollOrder = [
@@ -55,17 +55,13 @@ class _PortfolioPageState extends State<PortfolioPage> {
     'contact': SectionKeys.contact,
   };
 
-  @override
-  void initState() {
-    super.initState();
-    PortfolioData.load().then((_) {
-      if (mounted) setState(() {});
-    });
-  }
+  // Note: portfolio data is loaded once at the app root (see main.dart);
+  // this page only renders once that data is ready (see PortfolioGate).
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _progress.dispose();
     super.dispose();
   }
 
@@ -78,21 +74,15 @@ class _PortfolioPageState extends State<PortfolioPage> {
   }
 
   void _onScroll(double pixels) {
-    var needsRebuild = false;
     final nextScrolled = pixels > 12;
     if (nextScrolled != _scrolled) {
-      _scrolled = nextScrolled;
-      needsRebuild = true;
+      setState(() => _scrolled = nextScrolled);
     }
 
     final maxExtent = _scrollController.position.maxScrollExtent;
-    final progress = maxExtent > 0 ? (pixels / maxExtent).clamp(0.0, 1.0) : 0.0;
-    if ((progress - _progress).abs() > 0.001) {
-      _progress = progress;
-      needsRebuild = true;
-    }
-
-    if (needsRebuild) setState(() {});
+    _progress.value = maxExtent > 0
+        ? (pixels / maxExtent).clamp(0.0, 1.0)
+        : 0.0;
 
     if ((pixels - _lastScrollPixels).abs() < 40) return;
     _lastScrollPixels = pixels;
@@ -140,11 +130,20 @@ class _PortfolioPageState extends State<PortfolioPage> {
   @override
   Widget build(BuildContext context) {
     final palette = AppPalette.of(context);
+    final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: palette.background,
       body: Stack(
         children: [
+          // Ambient technical network behind everything.
+          Positioned(
+            top: -AnimatedBackground.parallaxPad,
+            left: 0,
+            right: 0,
+            height: size.height + AnimatedBackground.parallaxPad * 2,
+            child: AnimatedBackground(scrollController: _scrollController),
+          ),
           // Main scrollable content with the real scrollbar.
           Scrollbar(
             controller: _scrollController,
@@ -167,6 +166,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                 child: Column(
                   children: [
                     HeroSection(
+                      scrollController: _scrollController,
                       onProjectsTap: () => _onNavigate('projects'),
                       onContactTap: () => _onNavigate('contact'),
                     ),
@@ -216,37 +216,10 @@ class _PortfolioPageState extends State<PortfolioPage> {
               onMenuPressed: () => setState(() => _menuOpen = true),
             ),
           ),
-          _buildScrollProgress(context),
+          // Scroll progress line.
+          ScrollProgressBar(progress: _progress),
           _buildOverlay(context),
         ],
-      ),
-    );
-  }
-
-  Widget _buildScrollProgress(BuildContext context) {
-    final palette = AppPalette.of(context);
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 3,
-      child: IgnorePointer(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          width: double.infinity,
-          alignment: FractionalOffset(0, 0),
-          child: FractionallySizedBox(
-            alignment: AlignmentDirectional.centerStart,
-            widthFactor: _progress,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [palette.primary, palette.accent],
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -262,6 +235,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
         child: AnimatedOpacity(
           opacity: _menuOpen ? 1 : 0,
           duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
           child: Stack(
             children: [
               GestureDetector(
@@ -279,7 +253,12 @@ class _PortfolioPageState extends State<PortfolioPage> {
                     height: double.infinity,
                     child: Material(
                       color: palette.background,
-                      child: MobileDrawer(onNavigate: _onNavigate),
+                      child: MobileDrawer(
+                        isOpen: _menuOpen,
+                        activeSection: _activeSection,
+                        onNavigate: _onNavigate,
+                        onClose: () => setState(() => _menuOpen = false),
+                      ),
                     ),
                   ),
                 ),
