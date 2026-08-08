@@ -113,6 +113,7 @@
         "Role-Based Access Control (RBAC)"
       ],
       "demo_url": null,
+      "thumbnail": null,
       "screenshots": [],
       "stars": 0,
       "forks": 0,
@@ -140,6 +141,7 @@
         "Role-Based Access Control (RBAC)"
       ],
       "demo_url": null,
+      "thumbnail": "assets/thumbnails/listaskunu.png",
       "screenshots": [],
       "stars": 0,
       "forks": 0,
@@ -165,6 +167,7 @@
         "Database Query Optimization"
       ],
       "demo_url": null,
+      "thumbnail": "assets/thumbnails/rahti.png",
       "screenshots": [],
       "stars": 0,
       "forks": 0,
@@ -192,6 +195,7 @@
         "Git"
       ],
       "demo_url": null,
+      "thumbnail": "assets/thumbnails/futureX.png",
       "screenshots": [],
       "stars": 0,
       "forks": 0,

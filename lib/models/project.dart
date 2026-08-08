@@ -14,6 +14,7 @@ class Project {
   final String role;
   final List<String> contributions;
   final String? demoUrl;
+  final String? thumbnail;
   final bool isArchived;
 
   const Project({
@@ -27,6 +28,7 @@ class Project {
     required this.role,
     required this.contributions,
     this.demoUrl,
+    this.thumbnail,
     this.isArchived = false,
   });
 
@@ -46,6 +48,7 @@ class Project {
       role: source.role,
       contributions: source.contributions,
       demoUrl: map['demo_url'],
+      thumbnail: map['thumbnail'],
       isArchived: map['is_archived'] ?? false,
     );
   }

@@ -6,7 +6,7 @@ import '../core/theme/theme.dart';
 import '../core/widgets/widgets.dart';
 import '../models/models.dart';
 import 'project_details_dialog.dart';
-import 'project_visual.dart';
+import 'project_thumbnail.dart';
 
 class ProjectsSection extends StatelessWidget {
   const ProjectsSection({super.key});
@@ -89,10 +89,13 @@ class _FeaturedProjectCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ProjectVisual(
+          ProjectThumbnail(
+            imagePath: project.thumbnail,
             techStack: project.techStack,
             primaryLanguage: project.primaryLanguage,
-            accent: palette.primary,
+            projectName: project.name,
+            height: 240,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
           ),
           Padding(
             padding: const EdgeInsets.all(28),
@@ -178,10 +181,13 @@ class _ProjectCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ProjectVisual(
+          ProjectThumbnail(
+            imagePath: project.thumbnail,
             techStack: project.techStack,
             primaryLanguage: project.primaryLanguage,
-            accent: palette.primary,
+            projectName: project.name,
+            height: 180,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
           ),
           Padding(
             padding: const EdgeInsets.all(22),

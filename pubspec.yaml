@@ -25,6 +25,7 @@ flutter:
   assets:
     - assets/data/
     - assets/icons/
+    - assets/thumbnails/
   fonts:
     - family: Inter
       fonts:

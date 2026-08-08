@@ -6,7 +6,7 @@ import '../core/theme/theme.dart';
 import '../core/utils/motion.dart';
 import '../core/widgets/widgets.dart';
 import '../models/models.dart';
-import 'project_visual.dart';
+import 'project_thumbnail.dart';
 
 /// Opens the project details dialog with a polished scale + fade transition,
 /// feeling connected to the card that was tapped.
@@ -69,10 +69,15 @@ class _ProjectDetailsDialog extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(19),
                       ),
-                      child: ProjectVisual(
+                      child: ProjectThumbnail(
+                        imagePath: project.thumbnail,
                         techStack: project.techStack,
                         primaryLanguage: project.primaryLanguage,
-                        accent: accent,
+                        projectName: project.name,
+                        height: 260,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(19),
+                        ),
                       ),
                     ),
                     Padding(
