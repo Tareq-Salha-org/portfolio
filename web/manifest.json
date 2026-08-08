@@ -1,12 +1,12 @@
 {
-    "name": "salha_portfolio",
-    "short_name": "salha_portfolio",
+    "name": "Tareq Salha | Backend Developer Portfolio",
+    "short_name": "Tareq Salha",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#0B1220",
+    "theme_color": "#0B1220",
+    "description": "Tareq Salha — Backend Developer specializing in Laravel, PHP and RESTful APIs.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

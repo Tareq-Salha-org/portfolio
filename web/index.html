@@ -1,46 +1,95 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+<!doctype html>
+<html lang="en">
+  <head>
+    <base href="$FLUTTER_BASE_HREF" />
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <!-- Primary Meta Tags -->
+    <meta
+      name="description"
+      content="Tareq Salha — Backend Developer specializing in Laravel, PHP, RESTful APIs, database optimization, real-time systems, and third-party integrations."
+    />
+    <meta
+      name="keywords"
+      content="Tareq Salha, Tarek Salha, Backend Developer, Laravel, PHP, RESTful APIs, Database Architecture, Software Engineer, Syria, API Design, CI/CD"
+    />
+    <meta name="author" content="Tareq Fareed Salha" />
+    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Tareq Salha" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0B1220" />
+    <meta name="application-name" content="Tareq Salha — Backend Developer" />
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tareq Salha | Backend Developer" />
+    <meta
+      property="og:description"
+      content="Backend Developer specializing in Laravel, PHP, RESTful APIs, database optimization, real-time systems, and third-party integrations."
+    />
+    <meta property="og:site_name" content="Tareq Salha Portfolio" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_SY" />
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Tareq Salha | Backend Developer" />
+    <meta
+      name="twitter:description"
+      content="Backend Developer specializing in Laravel, PHP, RESTful APIs, database optimization, real-time systems, and integrations."
+    />
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="manifest" href="manifest.json" />
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="salha_portfolio">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Tareq Fareed Salha",
+        "jobTitle": "Backend Developer",
+        "email": "mailto:eng.tareq.salha@gmail.com",
+        "telephone": "+963985799827",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Syria"
+        },
+        "url": "https://github.com/TarekSalha288",
+        "sameAs": [
+          "https://github.com/TarekSalha288",
+          "https://www.linkedin.com/me"
+        ],
+        "knowsAbout": [
+          "Laravel",
+          "PHP",
+          "RESTful APIs",
+          "Database Architecture",
+          "MySQL",
+          "CI/CD",
+          "Real-Time Systems"
+        ]
+      }
+    </script>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    <title>Tareq Salha | Backend Developer — Laravel, PHP & RESTful APIs</title>
 
-  <title>salha_portfolio</title>
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
-</body>
+    <style>
+      html,
+      body {
+        background-color: #0b1220;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="flutter_bootstrap.js" async></script>
+  </body>
 </html>
