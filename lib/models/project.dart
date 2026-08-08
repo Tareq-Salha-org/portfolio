@@ -1,8 +1,8 @@
 /// Parsed portfolio project.
 ///
-/// `portfolio_data.json` stores the canonical project descriptions in Arabic;
-/// [English] holds faithful English translations used by this English-only
-/// site. All content exposed here is English.
+/// This is an English-only site. Project descriptions, roles and
+/// contributions come from [English], which holds the canonical English
+/// content for each project id.
 class Project {
   final String id;
   final String name;
@@ -54,9 +54,10 @@ class Project {
   List<String> get heroTech => techStack.take(3).toList();
 }
 
-/// Faithful English translations of the four project descriptions, so the
-/// English site does not mix languages. These are translations — the factual
-/// Arabic source in the JSON remains the canonical description.
+/// Canonical English content for each project (description, role and key
+/// contributions), keyed by project id. `portfolio_data.json` is English-only,
+/// and its project entries carry just the metadata; this class supplies the
+/// richer prose shown on cards and in the details dialog.
 class English {
   English._();
 

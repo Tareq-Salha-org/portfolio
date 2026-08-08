@@ -58,9 +58,7 @@ class PortfolioData {
   static Future<void> _doLoad() async {
     status.value = PortfolioDataStatus.loading;
     try {
-      final jsonStr = await rootBundle.loadString(
-        'assets/data/portfolio_data.json',
-      );
+      final jsonStr = await assetLoader();
       _raw = json.decode(jsonStr) as Map<String, dynamic>;
       _lastError = null;
       status.value = PortfolioDataStatus.loaded;
@@ -78,6 +76,9 @@ class PortfolioData {
 
   /// Resets the store to its pristine, unloaded state. Intended for tests
   /// only — the app root relies on the one-time bootstrap in `main()`.
+  ///
+  /// Replaces the [status] notifier instance, so it must be called before any
+  /// widget has subscribed (i.e. in `setUp`, never while the tree is mounted).
   @visibleForTesting
   static void resetForTesting() {
     _raw = null;
@@ -85,6 +86,15 @@ class PortfolioData {
     _loadFuture = null;
     status = ValueNotifier<PortfolioDataStatus>(PortfolioDataStatus.loading);
   }
+
+  /// Source of the raw JSON text.
+  ///
+  /// Defaults to the real asset bundle. Tests swap this for a synchronous
+  /// reader so loading is deterministic under the fake-async test zone (real
+  /// asset-channel fetches only resolve reliably on the first test).
+  @visibleForTesting
+  static Future<String> Function() assetLoader = () =>
+      rootBundle.loadString('assets/data/portfolio_data.json');
 
   /// Human-readable summary of the last failure (for the error screen).
   static String? get lastError => _lastError?.toString();

@@ -1,5 +1,8 @@
 /// Application strings — English only.
 ///
+/// (The file keeps the historic `app_locale` name, but there is no locale any
+/// more — do not re-introduce bilingual support here.)
+///
 /// The portfolio is intentionally single-language (English). These strings are
 /// resolved through [AppScope.strings]; there is no locale state anywhere, so
 /// content can never depend on a language switch.

@@ -201,11 +201,6 @@
       "classification_confidence": 0.98
     }
   ],
-  "notes": [
-    "تم تحديث رابط GitHub في الـ CV ليكون: https://github.com/TarekSalha288[cite: 1].",
-    "تم حذف الحقل repo_url من كافة المشاريع بناءً على طلبك.",
-    "تمت إزالة رابط القديم https://github.com/Tareq-Salha بالكامل."
-  ],
   "edge_case_handling": {
     "rate_limits": "Apply exponential backoff if GitHub API rate limits are encountered.",
     "private_repos": "Private repos are flagged and skipped if access token is missing.",
